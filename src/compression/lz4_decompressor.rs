@@ -102,7 +102,8 @@ pub fn decompress_lz4_multithreaded(data: &[u8], threads: usize) -> Result<Vec<u
         ]) as usize;
         offset += 8;
 
-        if offset + compressed_size > data.len() {
+        // Check for overflow before addition
+        if compressed_size > data.len() || offset > data.len() - compressed_size {
             return decompress_lz4(data, None);
         }
 

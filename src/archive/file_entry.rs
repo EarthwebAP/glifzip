@@ -270,10 +270,11 @@ mod tests {
     fn test_verify_integrity() {
         let data = b"Test data";
         let hash = crate::verification::calculate_sha256(data);
+        let hash_hex = crate::verification::hex_encode(&hash);
 
         let mut entry = FileEntry::directory(PathBuf::from("test"), 0o755, 1000, 1000);
         entry.file_type = FileType::Regular;
-        entry.sha256 = hash;
+        entry.sha256 = hash_hex;
 
         assert!(entry.verify_integrity(data).is_ok());
         assert!(entry.verify_integrity(b"Wrong data").is_err());
