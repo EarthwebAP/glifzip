@@ -2,6 +2,7 @@ pub mod format;
 pub mod compression;
 pub mod verification;
 pub mod archive;
+pub mod platform;
 
 use std::io::{Write, Read, Result, Error, ErrorKind};
 use std::fs::File;

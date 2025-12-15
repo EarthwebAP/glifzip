@@ -5,6 +5,41 @@ All notable changes to GLifzip will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-12-15
+
+### Added - Native Apple/macOS Support
+- **Complete macOS/Apple Support**: Full native integration for Intel and Apple Silicon
+- **Extended Attributes (xattr)**: Preserves all macOS file attributes during compression
+- **Finder Integration**: Automatic file type registration with Finder
+- **Quarantine Attribute Handling**: Proper management of download/gatekeeper attributes
+- **Apple Silicon Optimization**: Native arm64 support with optimization
+- **Platform Module**: Cross-platform abstraction with macOS-specific implementations
+- **AppleMetadata Struct**: Complete Apple metadata preservation system
+  - Extended attributes (xattr) storage and restoration
+  - Quarantine status tracking
+  - Resource fork preservation
+  - Finder label and flags support
+  - File type and creator codes
+- **macOS-Specific Tests**: Comprehensive test coverage for Apple features
+- **MACOS_SUPPORT.md**: Complete macOS integration guide
+- **Universal Binary Support**: Build for both arm64 and x86_64 architectures
+- **macOS Version Detection**: Features adapt to macOS version capability
+- **num_cpus Dependency**: Optimal core detection including P-core and E-core awareness
+
+### Changed
+- **Version**: Updated to 1.1.0
+- **Description**: Now emphasizes Apple/macOS support
+- **Dependencies**: Added num_cpus, core-foundation, objc, objc-foundation (macOS-specific)
+- **Cargo.toml**: Enhanced with repository, homepage, keywords, and categories metadata
+- **API**: Exported AppleMetadata from archive module
+
+### Technical Details
+- Platform module provides abstraction for OS-specific features
+- macOS implementation uses libc xattr functions
+- Conditional compilation ensures no overhead on non-macOS platforms
+- All 34 existing tests continue to pass
+- Zero compiler warnings
+
 ## [1.0.0] - 2025-12-15
 
 ### Added - Week 1 (Core Implementation)
