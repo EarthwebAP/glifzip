@@ -1,0 +1,55 @@
+[package]
+name = "glifzip"
+version = "1.0.0"
+edition = "2021"
+authors = ["GlyphOS Team"]
+description = "High-performance compression engine for GlyphOS"
+license = "MIT"
+
+[lib]
+name = "glifzip"
+path = "src/lib.rs"
+
+[[bin]]
+name = "glifzip"
+path = "src/main.rs"
+
+[dependencies]
+zstd = "0.13"
+lz4 = "1.24"
+rayon = "1.7"
+sha2 = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+adler = "1.0"
+chrono = "0.4"
+indicatif = "0.17"
+walkdir = "2.4"
+glob = "0.3"
+filetime = "0.2"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+tempfile = "3.0"
+flate2 = "1.0"
+
+[[bench]]
+name = "compression_bench"
+harness = false
+
+[[bench]]
+name = "decompression_bench"
+harness = false
+
+[[bench]]
+name = "comprehensive_bench"
+harness = false
+
+[[bin]]
+name = "performance_suite"
+path = "benches/performance_suite.rs"
+
+[[bin]]
+name = "zip_comparison"
+path = "benches/zip_comparison.rs"

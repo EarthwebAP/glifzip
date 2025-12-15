@@ -1,0 +1,43 @@
+# Rust build artifacts
+/target
+*.pdb
+
+# Cargo lock file (for libraries, uncomment to ignore)
+# Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test artifacts
+*.glif
+*.tmp
+
+# Benchmark results
+target/criterion/
+
+# Documentation build
+target/doc/
+
+# Release binaries (keep source, ignore built)
+*.exe
+*.dll
+*.so
+*.dylib
+
+# OS-specific files
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary test files
+test_output/
+tmp/
