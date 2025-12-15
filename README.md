@@ -1,17 +1,33 @@
 # GLifzip - High-Performance Compression Engine for GlyphOS
 
-**Version 1.0.0** | **Status: Week 1 Complete**
+[![Crates.io](https://img.shields.io/crates/v/glifzip.svg)](https://crates.io/crates/glifzip)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Release](https://img.shields.io/github/release/EarthwebAP/glifzip.svg)](https://github.com/EarthwebAP/glifzip/releases)
+
+**Version 1.1.0** | **Status: Production Ready** | **Apple/macOS Support: ✅ Complete**
 
 GLifzip is a modern, high-performance compression format designed for GlyphOS that achieves **10-100× faster compression and decompression** than Windows/macOS ZIP through multi-threaded Zstd compression and LZ4 decompression.
 
+Now with **full native Apple/macOS support**, extended attributes preservation, and Apple Silicon optimization.
+
 ## Features
 
+### Performance
 - **Multi-threaded Compression**: Zstd-based compression with linear core scaling (≥1 GB/s per core target)
 - **Ultra-fast Decompression**: LZ4-based decompression (≥2 GB/s per core target)
+- **Apple Silicon Optimized**: Native arm64 support with dedicated optimizations
 - **Deterministic Builds**: Bit-for-bit identical outputs across all platforms
+
+### Data Integrity & Security
 - **Cryptographic Verification**: SHA256 hashing for payload and archive integrity
 - **Symbolic Metadata**: JSON sidecars capture transformation intent
-- **Cross-platform**: Windows, Linux, and macOS support
+- **Extended Attributes**: Preserves macOS xattr, permissions, and timestamps
+
+### Platform Support
+- **Cross-platform**: Windows, Linux, and macOS (Intel & Apple Silicon)
+- **macOS Native**: Finder integration, file type registration, Gatekeeper support
+- **Directory Compression**: Archive entire directories with metadata preservation
+- **Exclude Patterns**: Flexible file filtering with glob patterns
 
 ## Performance Targets
 
@@ -24,11 +40,35 @@ GLifzip is a modern, high-performance compression format designed for GlyphOS th
 
 ## Installation
 
+### From crates.io (Recommended)
+
 ```bash
-# Build from source
+cargo install glifzip
+```
+
+### From Source
+
+```bash
+git clone https://github.com/EarthwebAP/glifzip.git
+cd glifzip
 cargo build --release
 
 # Binary will be at target/release/glifzip
+```
+
+### macOS Quick Install
+
+```bash
+# Using Homebrew (coming soon)
+brew install glifzip
+
+# Or download prebuilt binary
+wget https://github.com/EarthwebAP/glifzip/releases/download/v1.1.0/glifzip-macos-aarch64  # Apple Silicon
+# or
+wget https://github.com/EarthwebAP/glifzip/releases/download/v1.1.0/glifzip-macos-x86_64   # Intel
+
+chmod +x glifzip-macos-*
+sudo mv glifzip-macos-* /usr/local/bin/glifzip
 ```
 
 ## Usage
@@ -131,6 +171,18 @@ Compressed Payload
 - [x] Benchmark framework with Criterion
 - [x] CLI tool with create/extract/verify commands
 
+## macOS Support
+
+GLifzip v1.1.0 includes full native macOS/Apple support:
+
+- **Apple Silicon (M1/M2/M3)**: Native arm64 optimizations
+- **Intel Macs**: Full x86_64 support
+- **Extended Attributes**: Preserves xattr, permissions, timestamps
+- **Finder Integration**: File type registration for seamless Finder experience
+- **Quarantine Handling**: Proper Gatekeeper attribute management
+
+For complete macOS documentation, see [MACOS_SUPPORT.md](MACOS_SUPPORT.md).
+
 ## Testing
 
 Run the test suite:
@@ -144,6 +196,10 @@ cargo test --release -- --nocapture
 
 # Run benchmarks
 cargo bench
+
+# Test macOS-specific features
+cargo test --lib apple_metadata
+cargo test --lib platform
 ```
 
 ## Project Structure
