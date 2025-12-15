@@ -12,8 +12,8 @@
 /// - Raw data for visualization
 
 use std::fs::{File, create_dir_all};
-use std::io::{Write as IoWrite, Read};
-use std::time::{Instant, Duration};
+use std::io::Write as IoWrite;
+use std::time::Instant;
 use std::path::Path;
 use glifzip::{compress, decompress, CompressionConfig};
 
@@ -50,11 +50,11 @@ fn generate_compressible_text(size: usize) -> Vec<u8> {
 
 fn generate_source_code(size: usize) -> Vec<u8> {
     let code_patterns = [
-        b"fn main() {\n    println!(\"Hello, world!\");\n}\n\n",
-        b"pub struct MyStruct {\n    field1: u32,\n    field2: String,\n}\n\n",
-        b"impl MyTrait for MyStruct {\n    fn method(&self) -> bool {\n        true\n    }\n}\n\n",
-        b"use std::collections::HashMap;\nuse std::io::{Read, Write};\n\n",
-        b"#[derive(Debug, Clone, PartialEq)]\npub enum MyEnum {\n    Variant1,\n    Variant2(u32),\n}\n\n",
+        b"fn main() {\n    println!(\"Hello, world!\");\n}\n\n".as_slice(),
+        b"pub struct MyStruct {\n    field1: u32,\n    field2: String,\n}\n\n".as_slice(),
+        b"impl MyTrait for MyStruct {\n    fn method(&self) -> bool {\n        true\n    }\n}\n\n".as_slice(),
+        b"use std::collections::HashMap;\nuse std::io::{Read, Write};\n\n".as_slice(),
+        b"#[derive(Debug, Clone, PartialEq)]\npub enum MyEnum {\n    Variant1,\n    Variant2(u32),\n}\n\n".as_slice(),
     ];
 
     let mut data = Vec::with_capacity(size);

@@ -90,7 +90,8 @@ impl FileEntry {
         // Calculate SHA256 for regular files
         let sha256 = if file_type == FileType::Regular {
             let data = fs::read(path_ref)?;
-            crate::verification::calculate_sha256(&data)
+            let hash = crate::verification::calculate_sha256(&data);
+            crate::verification::hex_encode(&hash)
         } else {
             String::new()
         };
@@ -184,14 +185,16 @@ impl FileEntry {
         }
 
         let calculated_hash = crate::verification::calculate_sha256(data);
-        if calculated_hash != self.sha256 {
+        let calculated_hex = crate::verification::hex_encode(&calculated_hash);
+
+        if calculated_hex != self.sha256 {
             return Err(Error::new(
                 ErrorKind::InvalidData,
                 format!(
                     "File integrity check failed for {}: expected {}, got {}",
                     self.path.display(),
                     self.sha256,
-                    calculated_hash
+                    calculated_hex
                 )
             ));
         }

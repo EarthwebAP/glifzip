@@ -9,8 +9,9 @@ use std::path::Path;
 
 pub use format::{GlifHeader, GlifSidecar};
 pub use compression::{compress_zstd_multithreaded, decompress_lz4_multithreaded, CHUNK_SIZE, DEFAULT_COMPRESSION_LEVEL};
-pub use verification::{calculate_sha256, verify_sha256};
-pub use archive::{ArchiveManifest, FileEntry, DirectoryCompressor, DirectoryCompressionConfig};
+pub use verification::{calculate_sha256, verify_sha256, hex_encode, hex_decode};
+pub use archive::{ArchiveManifest, FileEntry, DirectoryCompressor};
+pub use archive::directory_compressor::DirectoryCompressionConfig;
 
 /// Configuration for compression
 #[derive(Debug, Clone)]

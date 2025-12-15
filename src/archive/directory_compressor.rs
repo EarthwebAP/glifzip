@@ -7,7 +7,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 
 use crate::archive::{ArchiveManifest, FileEntry};
 use crate::archive::file_entry::FileType;
-use crate::compression::CompressionConfig;
+use crate::CompressionConfig;
 
 /// Configuration for directory compression
 #[derive(Debug, Clone)]

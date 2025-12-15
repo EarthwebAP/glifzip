@@ -84,27 +84,72 @@ enum Commands {
     },
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let cli = Cli::parse();
 
     let result = match cli.command {
-        Commands::Create { input, output, level, threads } => {
+        Commands::Create { input, output, level, threads, recursive, verbose, exclude, no_progress } => {
             let threads = threads.unwrap_or_else(|| std::thread::available_parallelism().map(|n| n.get()).unwrap_or(8));
-            let config = glifzip::CompressionConfig::new(level, threads);
 
-            println!("Compressing {} to {} (level={}, threads={})",
-                     input.display(), output.display(), level, threads);
+            if recursive || input.is_dir() {
+                // Directory compression mode
+                let compression_config = glifzip::CompressionConfig::new(level, threads);
+                let dir_config = glifzip::DirectoryCompressionConfig::new(compression_config)
+                    .with_exclude_patterns(exclude)
+                    .with_verbose(verbose)
+                    .with_progress(!no_progress);
 
-            glifzip::compress_file(&input, &output, &config)
+                if verbose {
+                    println!("Compressing directory {} to {} (level={}, threads={})",
+                             input.display(), output.display(), level, threads);
+                }
+
+                let compressor = glifzip::DirectoryCompressor::new(dir_config)?;
+                compressor.compress_directory(&input, &output)
+            } else {
+                // Single file compression mode
+                let config = glifzip::CompressionConfig::new(level, threads);
+
+                if verbose {
+                    println!("Compressing {} to {} (level={}, threads={})",
+                             input.display(), output.display(), level, threads);
+                }
+
+                glifzip::compress_file(&input, &output, &config)
+            }
         }
 
-        Commands::Extract { input, output, threads } => {
+        Commands::Extract { input, output, threads, verbose, no_progress } => {
             let threads = threads.unwrap_or_else(|| std::thread::available_parallelism().map(|n| n.get()).unwrap_or(8));
 
-            println!("Extracting {} to {} (threads={})",
-                     input.display(), output.display(), threads);
+            // Try to read the archive to determine if it's a directory archive
+            let archive_data = std::fs::read(&input)?;
+            let mut cursor = std::io::Cursor::new(&archive_data);
 
-            glifzip::decompress_file(&input, &output, threads)
+            // Try to read as directory archive first
+            if let Ok(_manifest) = glifzip::ArchiveManifest::read(&mut cursor) {
+                // Directory archive
+                if verbose {
+                    println!("Extracting directory archive {} to {} (threads={})",
+                             input.display(), output.display(), threads);
+                }
+
+                glifzip::DirectoryCompressor::extract_directory(
+                    &input,
+                    &output,
+                    threads,
+                    verbose,
+                    !no_progress
+                )
+            } else {
+                // Single file archive
+                if verbose {
+                    println!("Extracting {} to {} (threads={})",
+                             input.display(), output.display(), threads);
+                }
+
+                glifzip::decompress_file(&input, &output, threads)
+            }
         }
 
         Commands::Verify { input } => {
@@ -121,10 +166,48 @@ fn main() {
                     println!("  Threads used: {}", sidecar.archive.threads);
                 })
         }
+
+        Commands::List { input, verbose } => {
+            println!("Listing contents of {}...", input.display());
+
+            std::fs::read(&input)
+                .and_then(|archive_data| {
+                    let mut cursor = std::io::Cursor::new(&archive_data);
+                    let manifest = glifzip::ArchiveManifest::read(&mut cursor)?;
+
+                    println!("Archive: {}", input.display());
+                    println!("Files: {}", manifest.file_count);
+                    println!("Total size: {} bytes", manifest.total_size);
+                    println!("Base directory: {}", manifest.base_directory.display());
+                    println!("\nContents:");
+
+                    for file_info in manifest.list_files() {
+                        println!("  {}", file_info);
+                    }
+
+                    if verbose {
+                        println!("\nDetailed information:");
+                        for entry in &manifest.entries {
+                            println!("  {} ({} bytes, mode: {:o})",
+                                entry.path.display(),
+                                entry.size,
+                                entry.mode
+                            );
+                            if let Some(ref target) = entry.symlink_target {
+                                println!("    -> {}", target.display());
+                            }
+                        }
+                    }
+
+                    Ok(())
+                })
+        }
     };
 
     if let Err(e) = result {
         eprintln!("Error: {}", e);
         std::process::exit(1);
     }
+
+    Ok(())
 }

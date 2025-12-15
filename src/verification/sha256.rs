@@ -27,8 +27,25 @@ pub fn verify_sha256(data: &[u8], expected_hash: &[u8; 32]) -> Result<()> {
     }
 }
 
-fn hex_encode(bytes: &[u8]) -> String {
+pub fn hex_encode(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02x}", b)).collect()
+}
+
+pub fn hex_decode(s: &str) -> Result<[u8; 32]> {
+    if s.len() != 64 {
+        return Err(Error::new(
+            ErrorKind::InvalidInput,
+            format!("Invalid hex string length: {} (expected 64)", s.len())
+        ));
+    }
+
+    let mut bytes = [0u8; 32];
+    for i in 0..32 {
+        let hex_byte = &s[i*2..i*2+2];
+        bytes[i] = u8::from_str_radix(hex_byte, 16)
+            .map_err(|e| Error::new(ErrorKind::InvalidInput, e))?;
+    }
+    Ok(bytes)
 }
 
 #[cfg(test)]
